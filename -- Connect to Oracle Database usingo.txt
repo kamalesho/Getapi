@@ -1,0 +1,59 @@
+-- Connect to Oracle Database using SQL*Plus or another SQL client
+
+-- Create a schema
+CREATE USER chennai_metro IDENTIFIED BY jayasuriya;
+
+-- Grant necessary privileges to the schema
+GRANT CONNECT, RESOURCE TO chennai_metro;
+
+-- Connect to the new schema
+CONNECT chennai_metro/password;
+
+-- Drop tables if they exist
+DROP TABLE Ticket CASCADE CONSTRAINTS;
+DROP TABLE UserAccount CASCADE CONSTRAINTS;
+DROP TABLE Train CASCADE CONSTRAINTS;
+DROP TABLE Station CASCADE CONSTRAINTS;
+
+-- Create Station Table
+CREATE TABLE Station (
+    StationID NUMBER PRIMARY KEY,
+    StationName VARCHAR2(255) NOT NULL,
+    Location VARCHAR2(255) NOT NULL
+);
+
+-- Create Train Table
+CREATE TABLE Train (
+    TrainID NUMBER PRIMARY KEY,
+    TrainName VARCHAR2(255) NOT NULL,
+    SourceStationID NUMBER,
+    DestinationStationID NUMBER,
+    DepartureTime TIMESTAMP,
+    ArrivalTime TIMESTAMP,
+    FOREIGN KEY (SourceStationID) REFERENCES Station(StationID),
+    FOREIGN KEY (DestinationStationID) REFERENCES Station(StationID)
+);
+
+-- Create UserAccount Table
+CREATE TABLE UserAccount (
+    UserID NUMBER PRIMARY KEY,
+    Username VARCHAR2(255) NOT NULL,
+    Password VARCHAR2(255) NOT NULL,
+    Email VARCHAR2(255),
+    Phone VARCHAR2(15)
+);
+
+-- Create Ticket Table
+CREATE TABLE Ticket (
+    TicketID NUMBER PRIMARY KEY,
+    UserID NUMBER,
+    TrainID NUMBER,
+    SourceStationID NUMBER,
+    DestinationStationID NUMBER,
+    Fare NUMBER(10, 2),
+    BookingTime TIMESTAMP,
+    FOREIGN KEY (UserID) REFERENCES UserAccount(UserID),
+    FOREIGN KEY (TrainID) REFERENCES Train(TrainID),
+    FOREIGN KEY (SourceStationID) REFERENCES Station(StationID),
+    FOREIGN KEY (DestinationStationID) REFERENCES Station(StationID)
+);
